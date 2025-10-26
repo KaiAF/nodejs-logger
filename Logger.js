@@ -1,98 +1,106 @@
 const path = require('path');
 
-let NAMESPACE = require.main.filename.split(path.sep).pop().toLowerCase().split('.')[0];
-let DEBUG = false;
+/**
+ * @type {Logger[]}
+ */
+const LOGGERS = [];
 
-const Logger = {
+class Logger {
+  #NAMESPACE = null;
+  #DEBUG = false;
+
   /**
-   * @param {string} name 
-   * @returns {void}
+   * @param {string} namespace 
    */
-  namespace: (name) => NAMESPACE = name,
+  constructor(namespace = '') {
+    this.#NAMESPACE = namespace?.trim();
+    LOGGERS.push(this);
+  }
+
+  /**
+   * @returns {string|null}
+   */
+  getNameSpace() {
+    return this.#NAMESPACE;
+  }
+
   /**
    * @param {'info'|'debug'} level 
+   */
+  setLevel(level = '') {
+    if (level && level.toString().trim().toLowerCase() === 'debug') {
+      this.#DEBUG = true;
+    } else {
+      this.#DEBUG = false;
+    }
+  }
+
+  /**
+   * @param  {...any} data data to be logged
    * @returns {void}
    */
-  setLevel: (level) => {
-    if (level?.toLowerCase() == 'debug') {
-      DEBUG = true;
-    } else {
-      DEBUG = false;
-    }
-  },
-  log,
-  info,
-  warn,
-  error,
-  debug,
-  debugOr,
-};
-
-/**
- * @param  {...any} data data to be logged
- * @returns {void}
- */
-function log(...data) {
-  if (!data?.length) return;
-  const fileName = getOriginalFileName();
-  console.log(`[${NAMESPACE} - ${fileName}] (\x1b[0;35mInfo\x1b[0m)`, ...data);
-}
-
-/**
- * @param  {...any} data data to be logged
- * @returns {void}
- */
-function info(...data) {
-  if (!data?.length) return;
-  const fileName = getOriginalFileName();
-  console.info(`[${NAMESPACE} - ${fileName}] (\x1b[0;35mInfo\x1b[0m)`, ...data);
-}
-
-/**
- * @param  {...any} data data to be logged
- * @returns {void}
- */
-function warn(...data) {
-  if (!data?.length) return;
-  const fileName = getOriginalFileName();
-  console.warn(`[${NAMESPACE} - ${fileName}] (\x1b[0;33mWarn\x1b[0m)`, ...data);
-}
-
-/**
- * @param  {...any} data data to be logged
- * @returns {void}
- */
-function error(...data) {
-  if (!data?.length) return;
-  const fileName = getOriginalFileName();
-  if (data[0] instanceof Error) {
-    console.error(`[${NAMESPACE} - ${fileName}] (\x1b[0;91mError\x1b[0m)`, data[0].message, '-', getOriginalFileName(data[0]));
-  } else {
-    console.error(`[${NAMESPACE} - ${fileName}] (\x1b[0;91mError\x1b[0m)`, ...data);
+  log(...data) {
+    if (!data?.length) return;
+    const fileName = getOriginalFileName();
+    console.log(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;35mInfo\x1b[0m)`, ...data);
   }
-}
 
-/**
+  /**
  * @param  {...any} data data to be logged
  * @returns {void}
  */
-function debug(...data) {
-  if (!DEBUG || !data?.length) return;
-  const fileName = getOriginalFileName();
-  console.debug(`[${fileName}] (\x1b[0;94mDebug\x1b[0m)`, ...data);
-}
+  info(...data) {
+    if (!data?.length) return;
+    const fileName = getOriginalFileName();
+    console.info(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;35mInfo\x1b[0m)`, ...data);
+  }
 
-/**
- * @param  {...any} data data to be logged
- * @returns {void}
- */
-function debugOr(...data) {
-  if (!data?.length) return;
-  const fileName = getOriginalFileName();
-  if (!DEBUG) {
-    console.info(`[${NAMESPACE} - ${fileName}] (\x1b[0;35mInfo\x1b[0m)`, data.pop());
-  } else {
-    console.debug(`[${NAMESPACE} - ${fileName}] (\x1b[0;94mDebug\x1b[0m)`, ...data.slice(0, -1));
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  warn(...data) {
+    if (!data?.length) return;
+    const fileName = getOriginalFileName();
+    console.warn(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;33mWarn\x1b[0m)`, ...data);
+  }
+
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  error(...data) {
+    if (!data?.length) return;
+    const fileName = getOriginalFileName();
+    if (data[0] instanceof Error) {
+      console.error(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;91mError\x1b[0m)`, data[0].message, '-', getOriginalFileName(data[0]));
+    } else {
+      console.error(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;91mError\x1b[0m)`, ...data);
+    }
+  }
+
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  debug(...data) {
+    if (!this.#DEBUG || !data?.length) return;
+    const fileName = getOriginalFileName();
+    console.debug(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;94mDebug\x1b[0m)`, ...data);
+  }
+
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  debugOr(...data) {
+    if (!data?.length) return;
+    const fileName = getOriginalFileName();
+    if (!this.#DEBUG) {
+      console.info(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;35mInfo\x1b[0m)`, data.pop());
+    } else {
+      console.debug(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;94mDebug\x1b[0m)`, ...data.slice(0, -1));
+    }
   }
 }
 
@@ -114,4 +122,21 @@ function getOriginalFileName(providedError = null) {
 
 }
 
-module.exports = Logger;
+module.exports = {
+  /**
+   * @param {string|null} namespace 
+   * @returns {Logger}
+   */
+  create: (namespace) => new Logger(namespace),
+  /**
+   * @param {string|null} namespace 
+   * @returns {Logger}
+   */
+  get: (namespace) => LOGGERS.filter(n => n.getNameSpace()?.trim().toLowerCase() === namespace?.trim().toLowerCase())?.[0],
+  log: (...data) => LOGGERS[LOGGERS.length - 1]?.log(...data),
+  info: (...data) => LOGGERS[LOGGERS.length - 1]?.info(...data),
+  warn: (...data) => LOGGERS[LOGGERS.length - 1]?.warn(...data),
+  error: (...data) => LOGGERS[LOGGERS.length - 1]?.error(...data),
+  debug: (...data) => LOGGERS[LOGGERS.length - 1]?.debug(...data),
+  debugOr: (...data) => LOGGERS[LOGGERS.length - 1]?.debugOr(...data),
+};
