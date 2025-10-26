@@ -1,6 +1,6 @@
 {
   "name": "@kaiaf/logger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A very simple logger",
   "main": "Logger.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KaiAF/logger.git"
+    "url": "git+https://github.com/KaiAF/nodejs-logger.git"
   },
   "keywords": [
     "logger"
@@ -16,7 +16,7 @@
   "author": "Iris",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/KaiAF/logger/issues"
+    "url": "https://github.com/KaiAF/nodejs-logger/issues"
   },
-  "homepage": "https://github.com/KaiAF/logger#readme"
+  "homepage": "https://github.com/KaiAF/nodejs-logger#readme"
 }
