@@ -102,6 +102,36 @@ class Logger {
       console.debug(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;94mDebug\x1b[0m)`, ...data.slice(0, -1));
     }
   }
+
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  debugInfo(...data) {
+    if (!this.#DEBUG || !data?.length) return;
+    const fileName = getOriginalFileName();
+    console.debug(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;35mDebug\x1b[0m)`, ...data);
+  }
+
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  debugWarn(...data) {
+    if (!this.#DEBUG || !data?.length) return;
+    const fileName = getOriginalFileName();
+    console.debug(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;33mDebug\x1b[0m)`, ...data);
+  }
+
+  /**
+   * @param  {...any} data data to be logged
+   * @returns {void}
+   */
+  debugError(...data) {
+    if (!this.#DEBUG || !data?.length) return;
+    const fileName = getOriginalFileName();
+    console.debug(`[${this.getNameSpace() ? this.getNameSpace() + ' - ' : ''}${fileName}] (\x1b[0;91mDebug\x1b[0m)`, ...data);
+  }
 }
 
 function getOriginalFileName(providedError = null) {
@@ -130,13 +160,16 @@ module.exports = {
   create: (namespace) => new Logger(namespace),
   /**
    * @param {string|null} namespace 
-   * @returns {Logger}
+   * @returns {Logger|null}
    */
-  get: (namespace) => LOGGERS.filter(n => n.getNameSpace()?.trim().toLowerCase() === namespace?.trim().toLowerCase())?.[0],
+  get: (namespace) => LOGGERS.filter(n => n.getNameSpace()?.trim().toLowerCase() === namespace?.trim().toLowerCase())?.[0] || null,
   log: (...data) => LOGGERS[LOGGERS.length - 1]?.log(...data),
   info: (...data) => LOGGERS[LOGGERS.length - 1]?.info(...data),
   warn: (...data) => LOGGERS[LOGGERS.length - 1]?.warn(...data),
   error: (...data) => LOGGERS[LOGGERS.length - 1]?.error(...data),
   debug: (...data) => LOGGERS[LOGGERS.length - 1]?.debug(...data),
   debugOr: (...data) => LOGGERS[LOGGERS.length - 1]?.debugOr(...data),
+  debugInfo: (...data) => LOGGERS[LOGGERS.length - 1]?.debugInfo(...data),
+  debugWarn: (...data) => LOGGERS[LOGGERS.length - 1]?.debugWarn(...data),
+  debugError: (...data) => LOGGERS[LOGGERS.length - 1]?.debugError(...data),
 };
